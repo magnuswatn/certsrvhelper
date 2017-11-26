@@ -1,0 +1,53 @@
+.node {
+    position: relative;
+}
+.sub {
+    padding-left: 1.5em;
+    border-left: solid 1px #E0E0E0;
+}
+.head {
+    height: 1em;
+    white-space: nowrap;
+}
+.node:hover > .head, .node.hover > .head {
+    color: darkblue;
+    font-weight: bold;
+}
+.node:hover > .head:hover, .node.hover > .head.hover {
+    color: blue;
+}
+.node.collapsed {
+    font-style: italic;
+}
+.node.collapsed > .sub {
+    display: none;
+}
+.node.collapsed.hover > .sub {
+    display: block;
+}
+.value {
+    display: none;
+    position: absolute;
+    z-index: 2;
+    top: 1.2em;
+    left: 0;
+    background-color: #D0D0D0;
+    border: solid 1px white;
+    padding: 2px;
+}
+.head:hover + .value, .head.hover + .value {
+    display: block;
+}
+.preview {
+    margin-left: 1em;
+    color: #505050;
+    font-weight: normal;
+}
+.preview > .oid {
+    margin-left: 1em;
+    color: #808080;
+    font-weight: normal;
+}
+#tree {
+    font-family: monospace;
+}
