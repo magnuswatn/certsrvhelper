@@ -62,7 +62,7 @@ $modifications = @{
     "</Title>" = "`t<link rel=`"stylesheet`" href=`"certsrvhelper/certsrvhelper.css`" type=`"text/css`">"
     "<Input Type=Submit ID=btnSubmit Value=`"Submit &gt;`" <%If `"IE`"=sBrowser Then%> Style=`"width:.75in`"<%End If%>>" = "<Input Type=Button ID=btnParse Value=`"Show ASN1 &gt;`" onclick=`"decodeCSR();`" <%If `"IE`"=sBrowser Then%> Style=`"width:.75in`"<%End If%>>"
     "<TR><TD ColSpan=3 Height=20></TD></TR>" = "</table></td><td><div style=`"position: relative; padding-bottom: 1em;`"><div id=`"tree`"></div></div></td>"
-    "</P>" = "<table><td>"
+    "</P>" = "<table><td style=`"vertical-align:top`">"
     "<!-- End of standard text. Scripts follow  -->" = "<script type=`"text/javascript`" src=`"certsrvhelper/asn1js/base64.js`"></script>`r`n<script type=`"text/javascript`" src=`"certsrvhelper/asn1js/oids.js`"></script>`r`n<script type=`"text/javascript`" src=`"certsrvhelper/asn1js/int10.js`"></script>`r`n<script type=`"text/javascript`" src=`"certsrvhelper/asn1js/asn1.js`"></script>`r`n<script type=`"text/javascript`" src=`"certsrvhelper/asn1js/dom.js`"></script>`r`n<script type=`"text/javascript`" src=`"certsrvhelper/certsrvhelper.js`"></script>"
 }
 
