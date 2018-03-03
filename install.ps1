@@ -8,6 +8,47 @@ It is extremely fragile and hackish.
 Magnus Watn <magnus@watn.no>
 #>
 
+function compareFileToHash($file, $knownHashes) {
+    $actualHash = (Get-Filehash $file -Algorithm SHA256).hash
+
+    $knownHashes | Foreach-Object {
+        if ($actualHash -eq $_) {
+            return $true
+        }
+    }
+    return $false
+   }
+
+function modFile($file, $modifications) {
+    (Get-Content $file) |
+    Foreach-Object {
+        $line = $_
+        $line
+        $modifications.GetEnumerator() | Foreach-Object {
+            if ($line -match $_.Name)
+            {
+                "<!-- Start modified by certsrvhelper (https://github.com/magnuswatn/certsrvhelper) -->"
+                $_.Value
+                "<!-- End modified by certsrvhelper (https://github.com/magnuswatn/certsrvhelper) -->"
+            }
+        }
+    } | Set-Content $file
+}
+
+function fixPermissionOnFile($file) {
+    takeown /F $file
+    if (!($?)) {
+        "Failed to take owernship of $($file). Running as admin?"
+        exit 1
+    }
+
+    icacls $file /grant "$($env:USERNAME):F"
+    if (!($?)) {
+        "Failed give self permissions to $($file). Running as admin?"
+        exit 1
+    }
+}
+
 $cerstvLocation = "$($env:SystemRoot)\System32\certsrv\en-US"
 $backupLocation = "$($env:USERPROFILE)\Documents\certsrvhelper-backup"
 
@@ -24,16 +65,8 @@ $knownCertrqxtHashes = @(
     "02AF5E488AB2DFF34D78C06B35177541C3A3220E9B967CDC053AC8A6E88965DA"
     "2FCB2E7795E2253A267C8E6AF0E0E8ACB7B39302D54192B804869083BD0F03A9"
 )
-$actualCertrqxtHash = (Get-Filehash $certrqxt -Algorithm SHA256).hash
 
-$hashMatch = $false
-$knownCertrqxtHashes | Foreach-Object {
-    if ($actualCertrqxtHash -eq $_) {
-        $hashMatch = $true
-    }
-}
-
-if (!($hashMatch)) {
+if (!(compareFileToHash $certrqxt $knownCertrqxtHashes)) {
     "Your version of the certrqxt.asp file is different than expected. Not safe to continue. Exiting."
     exit 1
 }
@@ -45,17 +78,7 @@ Copy-Item $cerstvLocation $backupLocation -Recurse
 Copy-Item ./certsrvhelper $cerstvLocation -Recurse
 
 # The file is normally owned by Trusted Installer, we need to take owernship to be able to edit it
-takeown /F $certrqxt
-if (!($?)) {
-    "Failed to take owernship of the certrqxt.asp file. Running as admin?"
-    exit 1
-}
-
-icacls $certrqxt /grant "$($env:USERNAME):F"
-if (!($?)) {
-    "Failed give self permissions to the certrqxt.asp file. Running as admin?"
-    exit 1
-}
+fixPermissionOnFile $certrqxt
 
 # These are the modifications we are going to do; insert the value after the line that mathes the name
 $modifications = @{
@@ -66,18 +89,6 @@ $modifications = @{
     "<!-- End of standard text. Scripts follow  -->" = "<script type=`"text/javascript`" src=`"certsrvhelper/asn1js/base64.js`"></script>`r`n<script type=`"text/javascript`" src=`"certsrvhelper/asn1js/oids.js`"></script>`r`n<script type=`"text/javascript`" src=`"certsrvhelper/asn1js/int10.js`"></script>`r`n<script type=`"text/javascript`" src=`"certsrvhelper/asn1js/asn1.js`"></script>`r`n<script type=`"text/javascript`" src=`"certsrvhelper/asn1js/dom.js`"></script>`r`n<script type=`"text/javascript`" src=`"certsrvhelper/certsrvhelper.js`"></script>"
 }
 
-(Get-Content $certrqxt) |
-Foreach-Object {
-    $line = $_
-    $line
-    $modifications.GetEnumerator() | Foreach-Object {
-        if ($line -match $_.Name)
-        {
-            "<!-- Start modified by certsrvhelper (https://github.com/magnuswatn/certsrvhelper) -->"
-            $_.Value
-            "<!-- End modified by certsrvhelper (https://github.com/magnuswatn/certsrvhelper) -->"
-        }
-    }
-} | Set-Content $certrqxt
+modFile $certrqxt $modifications
 
 "Done."
