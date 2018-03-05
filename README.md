@@ -7,6 +7,12 @@ This is a little extension to the Microsoft Active Directory Certificate Service
 
 This saves you a trip to the command line, just to check that the CSR is correct.
 
+It also lets you show the newly issued certificate in the browser, without downloading it first.
+
+![bilde2](https://raw.githubusercontent.com/magnuswatn/certsrvhelper/master/picture2.png)
+
+Saves you a download!
+
 ## installation
 
 Clone the repo to the server running certsrv, and run the install.ps1 script as Administrator. Probably take a full backup beforehand.
